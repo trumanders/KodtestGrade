@@ -1,6 +1,8 @@
-<?php    
-    session_start();
+<?php
     include("header.php");
+
+    // om registrering lyckades  - "registered"
+    // annnars "registeration failed"
 ?>
 
 <!DOCTYPE html>
@@ -11,8 +13,7 @@
     <title>Document</title>
 </head>
 <body>
-    Hello <?php echo $_SESSION["username"]; ?>!<br>
-    This is your diary.<br>    
+    Registered!
 </body>
 </html>
 

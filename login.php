@@ -1,34 +1,41 @@
 <?php
     session_start();
     include("header.php");
+    include("database.php");
 
+    $wrongUsernameOrPassword = "";
     $emailValidationBorderStyle = "";
     $passwordValidationBorderStyle = "";
 
     if (isset($_POST["login"])) {
-        
-        if (empty($_POST["username"])) {
-            $emailValidationBorderStyle = "border-color: red;";
-        }
-        else {
-            $emailValidationBorderStyle = "";
-        }
+        $username = $_POST["username"];
+        $password = $_POST["password"];
+    }
+    
+    if (isset($username) && empty($username)) {
+        $emailValidationBorderStyle = "border-color: red;";
+    }
 
-        if (empty($_POST["password"])) {
-            $passwordValidationBorderStyle = "border-color: red;";
-        }
-        else {
-            $emailValidationBorderStyle = "";
-        }
+    if (isset($password) && empty($password)) {
+        $passwordValidationBorderStyle = "border-color: red;";
+    }
 
-        if (!empty($_POST["username"]) && !empty($_POST["password"])) {
-            $_SESSION["username"] = $_POST["username"];            
-            $_SESSION["password"] = $_POST["password"];
+    if (!empty($username) && !empty($password)) {        
 
-            // simulationg successful login
+        // validera användarnamn / login
+        $query = "SELECT * FROM user WHERE username = ? AND password = ?";
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param("ss", $username, $password);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $_SESSION["username"] = $username;
             $_SESSION["isLoggedIn"] = true;
             header("Location: home.php");
-        }
+        } else {
+            $wrongUsernameOrPassword = "Wrong username or password";
+        }            
     }
 ?>
 
@@ -43,9 +50,8 @@
     <script src="functions.js"></script>
 </head>
 <body>
-<form action="login.php" method="post">
-        <h2>Login</h2>
-
+    <h2>Login</h2>
+    <form action="login.php" method="post">
         <input
             type="text"
             name="username"
@@ -65,15 +71,15 @@
             style="<?php echo $passwordValidationBorderStyle; ?>"
             value="<?php echo isset($_POST["password"]) ? $_POST["password"] : "";?>">
         <br><br>
-        <!-- Login-button -->
-        <input type="submit" name="login" value="Log in"><br><br>
+        <input type="submit" name="login" value="Log in">
+        <?php echo "<span style='color: red;'>$wrongUsernameOrPassword</span>"; ?><br><br>
         <br>Don't have an account? <a href="register.php">Create new accout</a><br><br>
     </form>
 </body>
 </html>
 
-<?php 
-    
+<?php
+
 
     include("footer.html");
 ?>
