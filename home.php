@@ -1,6 +1,20 @@
 <?php    
     session_start();
+    include('database.php');
     include("header.php");
+    
+    if (isset($_SESSION['user'])) {
+        $userId = $_SESSION['user']['id'];
+        $username = $_SESSION['user']['username'];
+        $query = "SELECT id, diary_entry_date, diary_entry_subject, diary_entry_text FROM diary_entry WHERE user_id = ?";
+        $stmt = $connection->prepare($query);
+        $stmt->bind_param('i', $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $_SESSION['allUserDiaryEntries'] = $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        header('Location: index.php');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -11,14 +25,13 @@
     <title>Document</title>
 </head>
 <body>
-    Hello <?php echo $_SESSION['user']['username']; ?>!<br>
-    This is your diary.<br><br>
     <a href="editDiaryEntry.php"><h2> Add diary entry</h2></a>   
-    <br><br>
-    Your diary entries
-
-    <!-- lista alla inlägg som användaren har, med länk i form av datum -->
-    
+    Your diary entries<br>
+    <?php 
+        foreach ($_SESSION['allUserDiaryEntries'] as $diaryEntry) {
+            echo "<a href='viewDiaryEntry.php?id=" . htmlspecialchars($diaryEntry['id']) . "'>" . htmlspecialchars($diaryEntry['diary_entry_date']) . "</a><br>";
+        }
+    ?>    
 </body>
 </html>
 
