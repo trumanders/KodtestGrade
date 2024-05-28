@@ -12,7 +12,7 @@
 </head>
 <body>
     Hello <?php echo $_SESSION["username"]; ?>!<br>
-    This is your diary.<br><br>  
+    This is your diary.<br><br>
     <a href="editDiaryEntry.php"><h2> Add diary entry</h2></a>   
     <br><br>
     Your diary entries
