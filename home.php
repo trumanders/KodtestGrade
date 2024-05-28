@@ -11,7 +11,7 @@
     <title>Document</title>
 </head>
 <body>
-    Hello <?php echo $_SESSION["username"]; ?>!<br>
+    Hello <?php echo $_SESSION['user']['username']; ?>!<br>
     This is your diary.<br><br>
     <a href="editDiaryEntry.php"><h2> Add diary entry</h2></a>   
     <br><br>

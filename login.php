@@ -11,7 +11,7 @@
         header("Location: home.php");
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {        
         $username = $_POST["username"];
         $password = $_POST["password"];
     }
@@ -34,9 +34,11 @@
 
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
-            $_SESSION["username"] = $username;
+            $_SESSION["user"] = $result->fetch_assoc();
+            //$_SESSION["username"] = $username;
             $_SESSION["isLoggedIn"] = true;
             header("Location: home.php");
+            exit();
         } else {
             $wrongUsernameOrPassword = "Wrong username or password";
         }            

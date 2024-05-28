@@ -10,7 +10,6 @@
     if (!$connection) {
         echo "Could not connect to database: " . mysqli_connect_error();
     } else {
-        echo "Connection established - yipiie!";
-        
+        echo "Connection established - yipiie!";        
     }
 ?>

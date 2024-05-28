@@ -33,11 +33,9 @@
 
             // TODO: Kolla om registreringen lyckdes innan fortsätta:
             $_SESSION["isLoggedIn"] = true;
-            $_SESSION["username"] = $username;
+            $_SESSION["user"] = $result->fetch_assoc();
             header("Location: confirmRegistration.php");
             sleep(1);           
-
-            // om man är inloggad tas man till home, annars login
             header("Location: index.php");
         }
     }
