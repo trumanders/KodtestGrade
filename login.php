@@ -7,7 +7,11 @@
     $emailValidationBorderStyle = "";
     $passwordValidationBorderStyle = "";
 
-    if (isset($_POST["login"])) {
+    if ($_SESSION["isLoggedIn"]) {
+        header("Location: home.php");
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
         $username = $_POST["username"];
         $password = $_POST["password"];
     }
