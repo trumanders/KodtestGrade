@@ -17,7 +17,7 @@
             if ($result) {
                 echo "Diary entry added.";
             } else {
-                "Error: " . mysqli_error($connection);
+                echo "Error: " . mysqli_error($connection);
             }
         }
     }
@@ -38,8 +38,7 @@
 
     <form action="editDiaryEntry.php" method="post">
         <input type="text" name="diaryEntryDate" placeholder="date" value="<?php echo $currentDateTime; ?>"/><br><br>
-        <input type="text" name="diaryEntrySubject" placeholder="diary subject"/><br><br>
-    
+        <input type="text" name="diaryEntrySubject" placeholder="diary subject"/><br><br>    
         <textarea name="diaryEntryText" placeholder="enter your diary text here..." rows="10" cols="50"></textarea><br>
         <input type="submit" name="submit" value="Save">
     </form>

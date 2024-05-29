@@ -13,7 +13,7 @@
         $result = $stmt->get_result();
         $_SESSION['allUserDiaryEntries'] = $result->fetch_all(MYSQLI_ASSOC);
     } else {
-        header('Location: index.php');
+        header('Location: login.php');
     }
 ?>
 

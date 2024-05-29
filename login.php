@@ -7,13 +7,14 @@
     $emailValidationBorderStyle = "";
     $passwordValidationBorderStyle = "";
 
-    if ($_SESSION["isLoggedIn"]) {
-        header("Location: home.php");
+    if (isset($_SESSION['user'])) {
+        header('Location: home.php');
+        exit();
     }
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {        
-        $username = $_POST["username"];
-        $password = $_POST["password"];
+    if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['login'])) {        
+        $username = $_POST['username'];
+        $password = $_POST['password'];
     }
     
     if (isset($username) && empty($username)) {
@@ -24,21 +25,24 @@
         $passwordValidationBorderStyle = "border-color: red;";
     }
 
-    if (!empty($username) && !empty($password)) {        
+    if (!empty($username) && !empty($password)) {   
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);     
 
         // validera användarnamn / login
-        $query = "SELECT * FROM user WHERE username = ? AND password = ?";
+        $query = "SELECT id, username, password FROM user WHERE username = ?";
         $stmt = $connection->prepare($query);
-        $stmt->bind_param("ss", $username, $password);
+        $stmt->bind_param("s", $username);
         $stmt->execute();
-
         $result = $stmt->get_result();
+
         if ($result->num_rows > 0) {
-            $_SESSION["user"] = $result->fetch_assoc();
-            //$_SESSION["username"] = $username;
-            $_SESSION["isLoggedIn"] = true;
-            header("Location: home.php");
-            exit();
+            $user = $result->fetch_assoc();
+
+            if (password_verify($password, $user['password'])) {
+                $_SESSION['user'] = $user;
+                header("Location: home.php");
+                exit();
+            }
         } else {
             $wrongUsernameOrPassword = "Wrong username or password";
         }            
@@ -63,9 +67,9 @@
             name="username"
             placeholder="email"
             onfocus="clearPlaceholderAndBorderStyle(this)"
-            onblur="resetPlaceholderAndBorderStyle(this, 'email', <?php echo isset($_POST["login"]) ? 'true' : 'false'; ?>)"
+            onblur="resetPlaceholderAndBorderStyle(this, 'email', <?php echo isset($_POST['login']) ? 'true' : 'false'; ?>)"
             style="<?php echo $emailValidationBorderStyle; ?>"
-            value="<?php echo isset($_POST["username"]) ? $_POST["username"] : ""; ?>">
+            value="<?php echo isset($_POST['username']) ? $_POST['username'] : ""; ?>">
         <br><br>
 
         <input
@@ -73,9 +77,9 @@
             name="password"
             placeholder="password"
             onfocus="clearPlaceholderAndBorderStyle(this)"
-            onblur="resetPlaceholderAndBorderStyle(this, 'password', <?php echo isset($_POST["login"]) ? 'true' : 'false'; ?>)"
+            onblur="resetPlaceholderAndBorderStyle(this, 'password', <?php echo isset($_POST['login']) ? 'true' : 'false'; ?>)"
             style="<?php echo $passwordValidationBorderStyle; ?>"
-            value="<?php echo isset($_POST["password"]) ? $_POST["password"] : "";?>">
+            value="<?php echo isset($_POST['password']) ? $_POST['password'] : "";?>">
         <br><br>
         <input type="submit" name="login" value="Log in">
         <?php echo "<span style='color: red;'>$wrongUsernameOrPassword</span>"; ?><br><br>
