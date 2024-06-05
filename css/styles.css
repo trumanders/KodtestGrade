@@ -1,0 +1,9 @@
+input:focus {
+  outline: none;
+}
+
+.view-diary-entry {
+  margin: auto;
+  width: 50%;
+  padding: 10px;
+}

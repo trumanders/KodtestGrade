@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 4.9.5deb2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1:3306
--- Generation Time: May 17, 2024 at 02:42 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost:3306
+-- Generation Time: Jun 05, 2024 at 10:30 PM
+-- Server version: 8.0.36-0ubuntu0.20.04.1
+-- PHP Version: 7.4.3-4ubuntu2.22
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -28,9 +29,11 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `diary_entry` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `diary_entry` text NOT NULL
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `diary_entry_date` datetime NOT NULL,
+  `diary_entry_subject` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `diary_entry_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -40,17 +43,10 @@ CREATE TABLE `diary_entry` (
 --
 
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `id` int NOT NULL,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `user`
---
-
-INSERT INTO `user` (`id`, `username`, `password`) VALUES
-(1, 'anderssvenaxelj', 'password');
 
 --
 -- Indexes for dumped tables
@@ -60,7 +56,8 @@ INSERT INTO `user` (`id`, `username`, `password`) VALUES
 -- Indexes for table `diary_entry`
 --
 ALTER TABLE `diary_entry`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_id_user_id` (`user_id`);
 
 --
 -- Indexes for table `user`
@@ -77,13 +74,13 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `diary_entry`
 --
 ALTER TABLE `diary_entry`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -93,7 +90,7 @@ ALTER TABLE `user`
 -- Constraints for table `diary_entry`
 --
 ALTER TABLE `diary_entry`
-  ADD CONSTRAINT `fk_id_id` FOREIGN KEY (`id`) REFERENCES `user` (`id`);
+  ADD CONSTRAINT `fk_id_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
