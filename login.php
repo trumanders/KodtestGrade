@@ -42,7 +42,9 @@
                 $_SESSION['user'] = $user;
                 header("Location: home.php");
                 exit();
-            }
+            } else {
+                $wrongUsernameOrPassword = "Wrong username or password";
+            }            
         } else {
             $wrongUsernameOrPassword = "Wrong username or password";
         }            

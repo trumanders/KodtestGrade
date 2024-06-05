@@ -3,18 +3,20 @@
     include('database.php');
     include("header.php");
     
-    if (isset($_SESSION['user'])) {
-        $userId = $_SESSION['user']['id'];
-        $username = $_SESSION['user']['username'];
-        $query = "SELECT id, diary_entry_date, diary_entry_subject, diary_entry_text FROM diary_entry WHERE user_id = ?";
-        $stmt = $connection->prepare($query);
-        $stmt->bind_param('i', $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $_SESSION['allUserDiaryEntries'] = $result->fetch_all(MYSQLI_ASSOC);
-    } else {
+    if (!isset($_SESSION['user'])) {
         header('Location: login.php');
+        exit();
     }
+        
+    $userId = $_SESSION['user']['id'];
+    $username = $_SESSION['user']['username'];
+    
+    $query = "SELECT id, diary_entry_date, diary_entry_subject, diary_entry_text FROM diary_entry WHERE user_id = ?";
+    $stmt = $connection->prepare($query);
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $_SESSION['allUserDiaryEntries'] = $result->fetch_all(MYSQLI_ASSOC);    
 ?>
 
 <!DOCTYPE html>

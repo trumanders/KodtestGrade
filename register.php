@@ -38,39 +38,37 @@
             $stmt->execute();
             $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                $emailValidationBorderStyle = "border-color: red";
-                $usernameValidationText = "Username already taken.";                
-            }
+            if ($result->num_rows < 1) {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-            // spara username + password i databasen
-            $insertQuery = "INSERT INTO user (username, password) VALUES (?,?)";     
-            $stmt = $connection->prepare($insertQuery);
-            $stmt->bind_param("ss", $username, $hashed_password);
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                $newUserId = $stmt->insert_id;
-                $userSelectQuery = "SELECT id, username FROM user WHERE id = ?";
-                $stmt = $connection->prepare($userSelectQuery);
-                $stmt->bind_param('s', $newUserId);
+                // spara username + password i databasen
+                $insertQuery = "INSERT INTO user (username, password) VALUES (?,?)";     
+                $stmt = $connection->prepare($insertQuery);
+                $stmt->bind_param("ss", $username, $hashed_password);
                 $stmt->execute();
-                $result = $stmt->get_result();            
 
-                // Create user object
-                if($result->num_rows > 0) {
-                    $_SESSION['user'] = $result->fetch_assoc();
-                    header("Location: confirmRegistration.php");
-                    sleep(1);           
-                    header("Location: home.php");
-                } else {
-                    echo "Error fetching user information.";
-                }
+                if ($stmt->affected_rows > 0) {
+                    $newUserId = $stmt->insert_id;
+                    $userSelectQuery = "SELECT id, username FROM user WHERE id = ?";
+                    $stmt = $connection->prepare($userSelectQuery);
+                    $stmt->bind_param('s', $newUserId);
+                    $stmt->execute();
+                    $result = $stmt->get_result();            
+
+                    // Create user object
+                    if($result->num_rows > 0) {
+                        $_SESSION['user'] = $result->fetch_assoc();
+                        header("Location: confirmRegistration.php");
+                        sleep(1);           
+                        header("Location: home.php");
+                    } else {
+                        echo "Error fetching user information.";
+                    }
+                } 
             } else {
-                echo "Error signing up!";
-            }           
+                $emailValidationBorderStyle = "border-color: red";
+                $usernameValidationText = "Username already taken.";      
+            }    
         }
     }
 ?>
@@ -96,7 +94,9 @@
             onblur="resetPlaceholderAndBorderStyle(this, 'email', <?php echo isset($_POST['register']) ? 'true' : 'false'; ?>)"
             style="<?php echo $emailValidationBorderStyle; ?>"
             value="<?php echo isset($_POST['username']) ? $_POST['username'] : ""; ?>">
-            <?php echo $usernameValidationText; ?>
+            <span class="validation-error">
+                <?php echo $usernameValidationText; ?>
+            </span>
         <br><br>
         <input
             type="password"
