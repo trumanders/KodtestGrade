@@ -15,40 +15,40 @@
     if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['login'])) {        
         $username = $_POST['username'];
         $password = $_POST['password'];
-    }
+
+        if (empty($username)) {
+            $emailValidationBorderStyle = "border-color: red;";
+        }
+
+        if (empty($password)) {
+            $passwordValidationBorderStyle = "border-color: red;";
+        }
+
+        if (!empty($username) && !empty($password)) {   
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);     
     
-    if (isset($username) && empty($username)) {
-        $emailValidationBorderStyle = "border-color: red;";
-    }
-
-    if (isset($password) && empty($password)) {
-        $passwordValidationBorderStyle = "border-color: red;";
-    }
-
-    if (!empty($username) && !empty($password)) {   
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);     
-
-        // validera användarnamn / login
-        $query = "SELECT id, username, password FROM user WHERE username = ?";
-        $stmt = $connection->prepare($query);
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-
-            if (password_verify($password, $user['password'])) {
-                $_SESSION['user'] = $user;
-                header("Location: home.php");
-                exit();
+            // validera användarnamn / login
+            $query = "SELECT id, username, password FROM user WHERE username = ?";
+            $stmt = $connection->prepare($query);
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+    
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+    
+                if (password_verify($password, $user['password'])) {
+                    $_SESSION['user'] = $user;
+                    header("Location: home.php");
+                    exit();
+                } else {
+                    $wrongUsernameOrPassword = "Wrong username or password";
+                }            
             } else {
                 $wrongUsernameOrPassword = "Wrong username or password";
             }            
-        } else {
-            $wrongUsernameOrPassword = "Wrong username or password";
-        }            
-    }
+        }
+    } 
 ?>
 
 <!DOCTYPE html>

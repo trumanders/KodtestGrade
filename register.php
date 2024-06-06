@@ -1,7 +1,8 @@
 <?php
     session_start();
-    include_once("database.php");
-    include("header.php");
+    include_once('database.php');
+    include('header.php');
+    include('functions.php');
 
     if (isset($_SESSION['user'])) {
         header('Location: home.php');
@@ -26,50 +27,28 @@
 
             // VALIDERA email-regex
 
-            // VALIDERA GILTIGT LÖSENORD
-
             $username = mysqli_real_escape_string($connection, $_POST['username']);
-            $password = mysqli_real_escape_string($connection, $_POST['password']);
+            $password = mysqli_real_escape_string($connection, $_POST['password']);            
 
-            // Check if username exists in database
-            $checkUsernameQuery = "SELECT username FROM user WHERE username = ?";
-            $stmt = $connection->prepare($checkUsernameQuery);
-            $stmt->bind_param('s', $username);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result->num_rows < 1) {
+            if (isUserExists($username)) {
+                $emailValidationBorderStyle = "border-color: red";
+                $usernameValidationText = "Username already taken."; 
+            } else {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-                // spara username + password i databasen
-                $insertQuery = "INSERT INTO user (username, password) VALUES (?,?)";     
-                $stmt = $connection->prepare($insertQuery);
-                $stmt->bind_param("ss", $username, $hashed_password);
-                $stmt->execute();
+                $userResult = insertUser($username, $hashed_password);                           
 
-                if ($stmt->affected_rows > 0) {
-                    $newUserId = $stmt->insert_id;
-                    $userSelectQuery = "SELECT id, username FROM user WHERE id = ?";
-                    $stmt = $connection->prepare($userSelectQuery);
-                    $stmt->bind_param('s', $newUserId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();            
-
-                    // Create user object
-                    if($result->num_rows > 0) {
-                        $_SESSION['user'] = $result->fetch_assoc();
-                        header("Location: confirmRegistration.php");
-                        sleep(1);           
-                        header("Location: home.php");
-                    } else {
-                        echo "Error fetching user information.";
-                    }
-                } 
-            } else {
-                $emailValidationBorderStyle = "border-color: red";
-                $usernameValidationText = "Username already taken.";      
-            }    
-        }
+                // Create user object
+                if($userResult->num_rows > 0) {
+                    $_SESSION['user'] = $userResult->fetch_assoc();
+                    header("Location: confirmRegistration.php");
+                    sleep(1);           
+                    header("Location: home.php");
+                } else {
+                    echo "Error fetching user information.";
+                }
+            } 
+        }      
     }
 ?>
 
